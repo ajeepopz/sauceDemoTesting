@@ -1,0 +1,47 @@
+# Selenium WebDriver setup (using Chrome in this example)
+driver = webdriver.Chrome()
+
+# Navigate to the URL
+url = 'https://www.saucedemo.com/'
+driver.get(url)
+
+# Create a Test Suite
+test_suite = TestSuite()
+
+# Define steps as strings that can be executed by eval
+steps_login_valid = [
+    'driver.find_element(By.ID, "user-name").send_keys("standard_user")',
+    'driver.find_element(By.ID, "password").send_keys("secret_sauce")',
+    'driver.find_element(By.ID, "login-button").click()',
+    'self.actual_result = "User is logged in" if driver.current_url == "https://www.saucedemo.com/inventory.html" else "Login failed"'
+]
+
+steps_login_invalid = [
+    'driver.find_element(By.ID, "user-name").send_keys("invalid_user")',
+    'driver.find_element(By.ID, "password").send_keys("invalid_password")',
+    'driver.find_element(By.ID, "login-button").click()',
+    'self.actual_result = "Error message is displayed" if "Epic sadface" in driver.page_source else "No error message"'
+]
+
+# Add some test cases
+test_case1 = TestCase(id=1, description='Verify login with valid credentials', steps=steps_login_valid, expected_result='User is logged in')
+test_case2 = TestCase(id=2, description='Verify login with invalid credentials', steps=steps_login_invalid, expected_result='Error message is displayed')
+
+test_suite.add_test_case(test_case1)
+test_suite.add_test_case(test_case2)
+
+# Run the tests
+test_suite.run_tests(driver)
+
+# Print the test suite details
+print(test_suite)
+
+# Print details of each test case and bug report
+for test_case in test_suite.test_cases:
+    print(test_case)
+
+for bug_report in test_suite.bug_reports:
+    print(bug_report)
+
+# Close the driver
+driver.quit()
